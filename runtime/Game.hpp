@@ -54,13 +54,6 @@ int test_game_macro() {
 }
 START_TEST(test_game_macro);
 
-static void main_game() {
-    child_write("2^6\n");
-    child_read();
-    child_write("2^3\n");
-    child_read();
-}
-
 typedef struct {int x; int y;} Position;
 
 class Spaceship
@@ -68,7 +61,7 @@ class Spaceship
 public:
     Position mPosition;
     Spaceship() {
-        mPosition = Position {rand() % 2000, rand() % 50};
+        mPosition = Position {SPAWN_X_MIN + rand() % (SPAWN_X_MAX-SPAWN_X_MIN+1), SPAWN_Y_MIN + rand() % (SPAWN_Y_MAX-SPAWN_Y_MIN+1)};
     }
 };
 
@@ -76,15 +69,38 @@ class Game
 {
 public:
     const char *const name = "Spaceship Simulator";
+    std::vector<Spaceship> mShips;
+    std::vector<Position> floor;
     Game() {
         srand((unsigned) time(NULL));
+        init_ships();
+        init_map();
         std::cout<<"[v] Game "<<name<<" started."<<std::endl;
     }
     void process() {
-        
+        if (mShips.size() <= 0) {
+            std::cout<<"[x] Error: No spaceships instanciated in the game"<<std::endl;
+            return;
+        }
+        child_write("2^6\n");
+        child_read();
+        child_write("2^3\n");
+        child_read();
     }
     ~Game() {
         std::cout<<"[v] Resources for game "<<name<<" freed."<<std::endl;
     }
 private:
+    void init_ships() {
+        mShips.push_back(Spaceship());
+    }
+    void init_map() {
+        floor.push_back(Position {.x = POS_X_MIN, .y = 100});
+        floor.push_back(Position {.x = POS_X_MAX, .y = 100});
+    }
 };
+
+static void main_game() {
+    Game game = Game();
+    game.process();
+}
