@@ -12,13 +12,42 @@
 #define POS_Y_MAX 2000
 
 #define SPAWN_X_MIN 100
-#define PSPAWN_X_MAX 1900
+#define SPAWN_X_MAX 1900
 #define SPAWN_Y_MIN 1700
 #define SPAWN_Y_MAX 1900
 
 int test_game_macro() {
     if (POS_X_MAX <= POS_X_MIN) {
         std::cout<<"Error: POS_X_MAX <= POS_X_MIN"<<std::endl;
+        return 1;
+    }
+    if (POS_Y_MAX <= POS_Y_MIN) {
+        std::cout<<"Error: POS_Y_MAX <= POS_Y_MIN"<<std::endl;
+        return 1;
+    }
+    if (SPAWN_X_MAX <= SPAWN_X_MIN) {
+        std::cout<<"Error: SPAWN_X_MAX <= SPAWN_X_MIN"<<std::endl;
+        return 1;
+    }
+    if (SPAWN_Y_MAX <= SPAWN_Y_MIN) {
+        std::cout<<"Error: SPAWN_Y_MAX <= SPAWN_Y_MIN"<<std::endl;
+        return 1;
+    }
+
+    if (SPAWN_X_MIN < POS_X_MIN) {
+        std::cout<<"Error: SPAWN_X_MIN < POS_X_MIN"<<std::endl;
+        return 1;
+    }
+    if (SPAWN_Y_MIN < POS_Y_MIN) {
+        std::cout<<"Error: SPAWN_Y_MIN < POS_Y_MIN"<<std::endl;
+        return 1;
+    }
+    if (SPAWN_X_MAX > POS_X_MAX) {
+        std::cout<<"Error: SPAWN_X_MAX > POS_X_MAX"<<std::endl;
+        return 1;
+    }
+    if (SPAWN_Y_MAX > POS_Y_MAX) {
+        std::cout<<"Error: SPAWN_Y_MAX > POS_Y_MAX"<<std::endl;
         return 1;
     }
     return 0;
