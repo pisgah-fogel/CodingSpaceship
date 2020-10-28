@@ -5,7 +5,9 @@
 #include <cstring>
 #include <string>
 #include <unistd.h>
+
 #include "Engine.hpp"
+#include "Game.hpp"
 
 char default_output[] = "sim.xml";
 
@@ -65,6 +67,7 @@ Args* parse_args(int argc, char** argv)
 int main(int argc, char** argv) {
     
     Args* arguments = parse_args(argc, argv);
+    arguments->main = &main_game;
 
     child_run(arguments);
 

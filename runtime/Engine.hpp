@@ -49,6 +49,7 @@ std::string child_read() {
         return std::string(buffer);
     } else if (count == 0) {
         puts("> [empty]\n");
+        return std::string();
     } else {
         puts("[x] IO Error while reading from child process\n");
         return std::string();
@@ -58,6 +59,7 @@ std::string child_read() {
 typedef struct {
     char* output;
     char* binary;
+    void (*main)();
 } Args;
 
 void child_run(Args* arguments) {
@@ -88,13 +90,12 @@ void child_run(Args* arguments) {
         /* close fds not required by parent */       
         close(CHILD_READ_FD);
         close(CHILD_WRITE_FD);
- 
-        child_write("2^6\n");
-  
-        child_read();
 
-        child_write("2^3\n");
-  
-        child_read();
+        if (arguments->main != NULL) {
+            (*arguments->main)();
+        }
+        else {
+            puts("[x] Error: No main game function to run.\n");
+        }
     }
 }
