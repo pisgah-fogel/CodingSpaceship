@@ -3,6 +3,8 @@
 #include <unistd.h> 
 #include <sys/types.h> 
 #include <cstring>
+#include <string>
+#include <unistd.h>
 
 #define NUM_PIPES          2
 #define PARENT_WRITE_PIPE  0
@@ -77,6 +79,28 @@ void parse_args(int argc, char** argv)
     printf("[i] Output file is: %s\n", Args.output);
 }
 
+// Write to child’s stdin
+void child_write(std::string str) {
+    write(PARENT_WRITE_FD, str.c_str(), str.size());
+}
+
+// Read from child’s stdout
+std::string child_read() {
+    char buffer[100];
+    int count;
+    count = read(PARENT_READ_FD, buffer, sizeof(buffer)-1);
+    if (count > 0) {
+        buffer[count] = 0;
+        printf("> %s", buffer);
+        return std::string(buffer);
+    } else if (count == 0) {
+        puts("> [empty]\n");
+    } else {
+        puts("[x] IO Error while reading from child process\n");
+        return std::string();
+    }
+}
+
 int main(int argc, char** argv) {
     
     parse_args(argc, argv);
@@ -89,7 +113,9 @@ int main(int argc, char** argv) {
     pipe(pipes[PARENT_WRITE_PIPE]);
      
     if(!fork()) {
-         char* argv[]={ &(*Args.binary), 0};
+         char* argv[]={ &(*Args.binary), "-q", 0};
+
+         printf("[.] Running: '%s'...\n", Args.binary);
  
         dup2(CHILD_READ_FD, STDIN_FILENO);
         dup2(CHILD_WRITE_FD, STDOUT_FILENO);
@@ -101,39 +127,19 @@ int main(int argc, char** argv) {
         close(PARENT_READ_FD);
         close(PARENT_WRITE_FD);
 
-        printf("[.] Running: '%s'...\n", Args.binary);
         execv(argv[0], argv);
     } else {
-        char buffer[100];
-        int count;
- 
         /* close fds not required by parent */       
         close(CHILD_READ_FD);
         close(CHILD_WRITE_FD);
  
-        // Write to child’s stdin
-        write(PARENT_WRITE_FD, "2^6\n", 4);
+        child_write("2^6\n");
   
-        // Read from child’s stdout
-        count = read(PARENT_READ_FD, buffer, sizeof(buffer)-1);
-        if (count >= 0) {
-            buffer[count] = 0;
-            printf("%s", buffer);
-        } else {
-            printf("IO Error\n");
-        }
+        child_read();
 
-        // Write to child’s stdin
-        write(PARENT_WRITE_FD, "2^3\n", 4);
+        child_write("2^3\n");
   
-        // Read from child’s stdout
-        count = read(PARENT_READ_FD, buffer, sizeof(buffer)-1);
-        if (count >= 0) {
-            buffer[count] = 0;
-            printf("%s", buffer);
-        } else {
-            printf("IO Error\n");
-        }
+        child_read();
     }
 
     return 0;
