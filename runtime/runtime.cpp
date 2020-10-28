@@ -69,5 +69,6 @@ int main(int argc, char** argv) {
     child_run(arguments);
 
     delete(arguments);
+    puts("[v] Resources freed.");
     return 0;
 }
