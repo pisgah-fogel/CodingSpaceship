@@ -2,6 +2,21 @@ import sys
 import math
 import random
 
+def get_command(x, y):
+    # A, B, C, D or E
+    if y < 0: # y--
+        keypress = 'C'
+    elif x > 0: # x++
+        keypress = 'A'
+    elif y > 0: # y++
+        keypress = 'D'
+    elif x < 0: # x--
+        keypress = 'E'
+    else:
+        keypress = 'B'
+    return keypress
+
+
 first_init_input = int(input())
 second_init_input = int(input())
 third_init_input = int(input())
@@ -41,18 +56,30 @@ while True:
     if old_mx == mx and old_my == my and keypress != 'B':
         print("ERROR: key %c does work with %s %s %s %s" % (keypress, first_input, second_input, third_input, fourth_input), file=sys.stderr, flush=True)
     
+    # Add discovered areas to the map
+    map[mx][my] = 1 # 1 = floor
+    if first_input == '_':
+        map[mx][my-1] = 1
+    else:
+        map[mx][my-1] = 2
+
+    if second_input == '_':
+        map[mx+1][my] = 1
+    else:
+        map[mx+1][my] = 2
+    
+    if third_input == '_':
+        map[mx][my+1] = 1
+    else:
+        map[mx][my+1] = 2
+    
+    if fourth_input == '_':
+        map[mx-1][my] = 1
+    else:
+        map[mx-1][my] = 2
+
     print(map, file=sys.stderr, flush=True)
 
-    # A, B, C, D or E
-    if first_input == '_': # y--
-        keypress = 'C'
-    elif second_input == '_': # x++
-        keypress = 'A'
-    elif third_input == '_': # y++
-        keypress = 'D'
-    elif fourth_input == '_': # x--
-        keypress = 'E'
-    else:
-        keypress = 'B'
+    keypress = get_command(1, 1)
     
     print(keypress)
