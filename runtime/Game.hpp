@@ -71,21 +71,41 @@ public:
     const char *const name = "Spaceship Simulator";
     std::vector<Spaceship> mShips;
     std::vector<Position> floor;
+    bool mGameOver;
     Game() {
         srand((unsigned) time(NULL));
         init_ships();
         init_map();
+        mGameOver = false;
         std::cout<<"[v] Game "<<name<<" started."<<std::endl;
+    }
+    bool isGameOver() {
+        return mGameOver;
     }
     void process() {
         if (mShips.size() <= 0) {
             std::cout<<"[x] Error: No spaceships instanciated in the game"<<std::endl;
             return;
         }
+        // Collision with floor
+
+        // Collision between space ships
+
+        // Gravity, thrust, momentum and wind
+
+        // Send datas to client(s)
         child_write("2^6\n");
+
+        // Read commands
         child_read();
-        child_write("2^3\n");
-        child_read();
+
+        // Write in (XML) files
+        
+    }
+    void sendResults() {
+        if (!mGameOver) {
+            std::cout<<"Error: Sendind result while game is not over"<<std::endl;
+        }
     }
     ~Game() {
         std::cout<<"[v] Resources for game "<<name<<" freed."<<std::endl;
@@ -102,5 +122,7 @@ private:
 
 static void main_game() {
     Game game = Game();
-    game.process();
+    while (! game.isGameOver())
+        game.process();
+    game.sendResults();
 }
