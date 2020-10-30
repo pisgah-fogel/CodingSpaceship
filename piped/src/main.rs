@@ -1,7 +1,8 @@
-use std::process::{Command, Stdio, ChildStdin};
+use std::process::{Command, Stdio};
+use std::io::Write;
 
 fn main() {
-    let mut child : std::process::Child = Command::new("bc")
+    let mut child : std::process::Child = Command::new("echo")
         .arg("-q")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -11,7 +12,7 @@ fn main() {
 
     {
         let mut stdin = child.stdin.as_mut().expect("Failed to open stdin");
-        stdin.write_all("Hello, world!".as_bytes()).expect("Failed to write to stdin");
+        stdin.write("2+3".as_bytes()).expect("Failed to write to stdin");
     }
     
     let output = child.wait_with_output().expect("Failed to read stdout");
